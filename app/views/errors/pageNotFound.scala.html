@@ -1,0 +1,13 @@
+@(uri: String)
+
+@views.html.main("Page not found") {
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <h2>De gevraagde pagina bestaat helaas (nog) niet.</h2>
+                <p>We konden de pagina met url: @uri niet vinden helaas.
+                    Ga terug naar de <a href="/">homepage</a> en probeer het vanaf daar eens.</p>
+            </div>
+        </div>
+    </div>
+}
