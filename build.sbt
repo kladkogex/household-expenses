@@ -17,8 +17,9 @@ resolvers += Resolver.bintrayRepo("cakesolutions", "maven")
 libraryDependencies += "org.apache.commons" % "commons-csv" % "1.3"
 
 libraryDependencies ++= Seq(
-  "org.webjars" %% "webjars-play" % "2.5.0",
-  "org.webjars" % "bootstrap" % "3.1.1-2"
+  "org.webjars" %%  "webjars-play"  % "2.5.0",
+  "org.webjars" %   "bootstrap"     % "3.1.1-2",
+  "org.webjars" %   "jquery"        % "2.2.4"
 )
 
 libraryDependencies ++= Seq(
