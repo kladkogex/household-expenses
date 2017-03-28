@@ -1,4 +1,4 @@
-@(messages: Seq[String],errors: Seq[String])(implicit request: RequestHeader)
+@(errors: Seq[String] = Nil)(implicit request: RequestHeader)
 
 @import helper._
 
@@ -6,19 +6,23 @@
     <div class="container">
         <div class="row">
             <div class="col-xs-12">
-                @if(messages.nonEmpty) {
+                <h2>Importeer transacties</h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                @for(message <- request.flash.get("success")) {
                     <div class="alert alert-success">
-                        <strong>Importeren is geslaagd</strong>
-                        <ul>
-                        @errors.map(error => <li>@error</li>)
-                        </ul>
+                        <strong>@message</strong>
                     </div>
                 }
                 @if(errors.nonEmpty) {
                     <div class="alert alert-danger">
                         <strong>Oeps, er ging even iets mis</strong>
-                        <ul>
-                        @errors.map(error => <li>@error</li>)
+                        <ul class="list-unstyled">
+                        @for(message <- errors) {
+                            <li>@message</li>
+                        }
                         </ul>
                     </div>
                 }
@@ -29,7 +33,7 @@
             @form(routes.FileImport.complete, 'enctype -> "multipart/form-data") {
                 <div class="form-group">
                     <label for="importFile">Import bestand</label>
-                    <input type="file" id="importFile" name="importFile" class="form-control">
+                    <input type="file" id="importFile" name="importFile">
                 </div>
                 <div class="form-group">
                     <button type="submit" class="btn btn-primary">Importeren</button>

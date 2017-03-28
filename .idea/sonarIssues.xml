@@ -78,6 +78,11 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/public/stylesheets/main.css">
+          <value>
+            <set />
+          </value>
+        </entry>
       </map>
     </option>
   </component>

@@ -33,7 +33,7 @@ class FileImport @Inject()(actorSystem: ActorSystem, config: Configuration) exte
     * @return
     */
   def start = Action { implicit request =>
-    Ok(views.html.fileimport.index(Seq(),Seq()))
+    Ok(views.html.fileimport.index())
   }
 
   /**
@@ -47,25 +47,25 @@ class FileImport @Inject()(actorSystem: ActorSystem, config: Configuration) exte
     val tempFolder = config.getString("upload.tempfolder").getOrElse("/tmp")
 
     val missingImportFile: Future[Result] = {
-      Future.successful(BadRequest(views.html.fileimport.index(Seq(),Seq("Import file is niet gevonden"))))
+      Future.successful(BadRequest(views.html.fileimport.index(Seq("Import file is niet gevonden"))))
     }
 
     request.body.file("importFile").fold(missingImportFile) { importFile =>
       if (!importFile.filename.endsWith(".csv")) {
-        Future.successful(BadRequest("Invalid file extension detected"))
+        Future.successful(BadRequest(views.html.fileimport.index(Seq("Ongeldig bestand geupload"))))
       } else {
         // Make sure to drop the file on disk so the antivirus can have a look at it.
         val savedFile = importFile.ref.moveTo(
-          new File(Paths.get(tempFolder, UUID.randomUUID().toString() + ".csv").toString),
+          new File(Paths.get(tempFolder, UUID.randomUUID().toString + ".csv").toString),
           replace = true)
 
         (importer ? savedFile).flatMap {
           case error: ImportFailure => Future.successful(
-            BadRequest(views.html.fileimport.index(Seq(), Seq(error.message))))
+            BadRequest(views.html.fileimport.index(Seq(error.message))))
 
           case results: ImportResults => Future.successful(
-            Ok(views.html.fileimport.index(Seq(s"Het bestand is geimporteerd, " +
-              s"${results.numberOfTransactions} verwerkt."),Seq())))
+            Redirect(routes.FileImport.start())
+              .flashing("success" -> s"Het bestand is geimporteerd, ${results.numberOfTransactions} transacties verwerkt."))
         }
       }
     }
