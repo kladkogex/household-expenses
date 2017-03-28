@@ -1,0 +1,42 @@
+@(messages: Seq[String],errors: Seq[String])(implicit request: RequestHeader)
+
+@import helper._
+
+@views.html.main("Importeer transacties") {
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                @if(messages.nonEmpty) {
+                    <div class="alert alert-success">
+                        <strong>Importeren is geslaagd</strong>
+                        <ul>
+                        @errors.map(error => <li>@error</li>)
+                        </ul>
+                    </div>
+                }
+                @if(errors.nonEmpty) {
+                    <div class="alert alert-danger">
+                        <strong>Oeps, er ging even iets mis</strong>
+                        <ul>
+                        @errors.map(error => <li>@error</li>)
+                        </ul>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+            @form(routes.FileImport.complete, 'enctype -> "multipart/form-data") {
+                <div class="form-group">
+                    <label for="importFile">Import bestand</label>
+                    <input type="file" id="importFile" name="importFile" class="form-control">
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Importeren</button>
+                </div>
+                @CSRF.formField
+            }
+            </div>
+        </div>
+    </div>
+}
