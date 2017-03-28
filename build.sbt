@@ -1,3 +1,4 @@
+
 name := "householdexpenses"
 
 version := "1.0"
@@ -12,9 +13,16 @@ unmanagedResourceDirectories in Test <+=  baseDirectory ( _ /"target/web/public/
 
 resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
 
+resolvers += Resolver.bintrayRepo("cakesolutions", "maven")
+
 libraryDependencies += "org.apache.commons" % "commons-csv" % "1.3"
 
 libraryDependencies ++= Seq(
   "org.webjars" %% "webjars-play" % "2.5.0",
   "org.webjars" % "bootstrap" % "3.1.1-2"
+)
+
+libraryDependencies ++= Seq(
+  "net.cakesolutions" %% "scala-kafka-client"      % "0.10.2.0",
+  "net.cakesolutions" %% "scala-kafka-client-akka" % "0.10.2.0"
 )
