@@ -60,12 +60,12 @@ class FileImport @Inject()(actorSystem: ActorSystem, config: Configuration) exte
           replace = true)
 
         (importer ? savedFile).flatMap {
-          case error: ImportFailure => Future.successful(
-            BadRequest(views.html.fileimport.index(Seq(error.message))))
+          case ImportFailure(errorMsg) => Future.successful(
+            BadRequest(views.html.fileimport.index(Seq(errorMsg))))
 
-          case results: ImportResults => Future.successful(
+          case ImportResults(numTransactions) => Future.successful(
             Redirect(routes.FileImport.start())
-              .flashing("success" -> s"Het bestand is geimporteerd, ${results.numberOfTransactions} transacties verwerkt."))
+              .flashing("success" -> s"Het bestand is geimporteerd, ${numTransactions} transacties verwerkt."))
         }
       }
     }
