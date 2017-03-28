@@ -1,4 +1,3 @@
-
 name := "householdexpenses"
 
 version := "1.0"
@@ -26,3 +25,7 @@ libraryDependencies ++= Seq(
   "net.cakesolutions" %% "scala-kafka-client"      % "0.10.2.0",
   "net.cakesolutions" %% "scala-kafka-client-akka" % "0.10.2.0"
 )
+
+maintainer in Docker := "Willem Meints <willem.meints@gmail.com>"
+
+dockerExposedPorts in Docker := Seq(9000)
