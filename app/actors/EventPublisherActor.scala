@@ -1,7 +1,5 @@
 package actors
 
-import java.util.Properties
-
 import akka.actor.{Actor, ActorLogging}
 import cakesolutions.kafka.KafkaProducer.Conf
 import cakesolutions.kafka.KafkaProducerRecord
@@ -21,7 +19,7 @@ class EventPublisherActor @Inject()(configuration: Configuration) extends Actor 
   )
 
   private val config = new Conf(props, new StringSerializer, new StringSerializer)
-  private val producer = context.actorOf(KafkaProducerActor.props[String,String](config))
+  private val producer = context.actorOf(KafkaProducerActor.props(config), "producer")
 
   def receive = {
     case transactions: Seq[Transaction] => publishTransactions(transactions)
@@ -33,7 +31,7 @@ class EventPublisherActor @Inject()(configuration: Configuration) extends Actor 
     log.info("Importing transactions")
 
     val records = transactions.map(transaction => KafkaProducerRecord(
-      "transactions",transaction.account, Json.toJson(transaction)))
+      "transactions", transaction.account, Json.toJson(transaction).toString()))
 
     producer ! ProducerRecords(records)
   }
