@@ -2,7 +2,7 @@ package actors
 
 import java.io.File
 
-import akka.actor.{Actor, ActorLogging, Props}
+import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import models.Transaction
 import services.CSVImporter
 
@@ -11,10 +11,10 @@ object TransactionImporterActor {
   case class ImportFailure(message: String)
   case class ImportResults(numberOfTransactions: Long)
 
-  def props = Props(classOf[TransactionImporterActor])
+  def props(eventPublisher: ActorRef) = Props(classOf[TransactionImporterActor], eventPublisher)
 }
 
-class TransactionImporterActor extends Actor with ActorLogging {
+class TransactionImporterActor(publisher: ActorRef) extends Actor with ActorLogging {
 
   import TransactionImporterActor._
 
@@ -30,7 +30,7 @@ class TransactionImporterActor extends Actor with ActorLogging {
   }
 
   private def publishTransactions(transactions: Seq[Transaction]) = {
-    //TODO: Publish the transactions on the event bus
+    publisher ! transactions
     sender ! ImportResults(transactions.size)
   }
 }

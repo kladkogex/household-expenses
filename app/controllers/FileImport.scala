@@ -6,10 +6,11 @@ import java.util.UUID
 
 import actors.TransactionImporterActor
 import actors.TransactionImporterActor.{ImportFailure, ImportResults}
-import akka.actor.ActorSystem
+import akka.actor.{ActorRef, ActorSystem}
 import akka.pattern.ask
 import akka.util.Timeout
 import com.google.inject.Inject
+import com.google.inject.name.Named
 import play.api.Configuration
 import play.api.mvc.{Action, Controller, RequestHeader, Result}
 
@@ -22,8 +23,13 @@ import scala.concurrent.duration._
   * @param actorSystem Actor system for running the import actor
   * @param config      Configuration needed for the upload folder
   */
-class FileImport @Inject()(actorSystem: ActorSystem, config: Configuration) extends Controller {
-  private val importer = actorSystem.actorOf(TransactionImporterActor.props, "transactions-importer")
+class FileImport @Inject()(actorSystem: ActorSystem,
+                           config: Configuration,
+                           @Named("event-publisher") eventPublisher: ActorRef) extends Controller {
+
+  private val importer = actorSystem.actorOf(
+    TransactionImporterActor.props(eventPublisher),
+    "transactions-importer")
 
   import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
