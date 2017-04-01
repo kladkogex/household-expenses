@@ -4,8 +4,8 @@ import java.io.File
 import java.nio.file.Paths
 import java.util.UUID
 
-import actors.TransactionImporterActor
-import actors.TransactionImporterActor.{ImportFailure, ImportResults}
+import actors.TransactionImporter
+import actors.TransactionImporter.{ImportFailure, ImportResults}
 import akka.actor.{ActorRef, ActorSystem}
 import akka.pattern.ask
 import akka.util.Timeout
@@ -28,7 +28,7 @@ class FileImport @Inject()(actorSystem: ActorSystem,
                            @Named("event-publisher") eventPublisher: ActorRef) extends Controller {
 
   private val importer = actorSystem.actorOf(
-    TransactionImporterActor.props(eventPublisher),
+    TransactionImporter.props,
     "transactions-importer")
 
   import play.api.libs.concurrent.Execution.Implicits.defaultContext
