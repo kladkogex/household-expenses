@@ -9,6 +9,8 @@ GET     /                           controllers.Application.index
 GET     /import                     controllers.FileImport.start
 POST    /import                     controllers.FileImport.complete
 
+GET /maandoverzicht                 controllers.MonthlySummary.index
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
 

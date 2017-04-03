@@ -24,8 +24,7 @@ import scala.concurrent.duration._
   * @param config      Configuration needed for the upload folder
   */
 class FileImport @Inject()(actorSystem: ActorSystem,
-                           config: Configuration,
-                           @Named("event-publisher") eventPublisher: ActorRef) extends Controller {
+                           config: Configuration) extends Controller {
 
   private val importer = actorSystem.actorOf(
     TransactionImporter.props,

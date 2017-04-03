@@ -12,7 +12,11 @@ unmanagedResourceDirectories in Test <+= baseDirectory(_ / "target/web/public/te
 
 resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
 
-libraryDependencies += "org.apache.commons" % "commons-csv" % "1.3"
+libraryDependencies ++= Seq(
+  "org.apache.commons" % "commons-csv" % "1.3",
+  "com.typesafe.akka" %% "akka-persistence" % "2.4.17",
+  "com.typesafe.akka" %% "akka-testkit" % "2.4.17" % "test"
+)
 
 libraryDependencies ++= Seq(
   "org.webjars" %% "webjars-play" % "2.5.0",
