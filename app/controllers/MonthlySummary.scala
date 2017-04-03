@@ -8,6 +8,7 @@ import akka.pattern.ask
 import akka.util.Timeout
 import com.google.inject.{Inject, Singleton}
 import commands.GetStateForMonth
+import org.slf4j.LoggerFactory
 import play.api.mvc.{Action, AnyContent, Controller}
 
 import scala.collection.JavaConversions._
@@ -23,13 +24,17 @@ class MonthlySummary @Inject()(actorSystem: ActorSystem) extends Controller {
   import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
   private val summaries = actorSystem.actorOf(MonthlySummaries.props)
+  private val logger = LoggerFactory.getLogger(classOf[MonthlySummary])
 
   implicit val timeout: Timeout = 500.millis
 
   def index: Action[AnyContent] = Action.async { implicit request =>
+    logger.info(s"Locating summary for $currentMonth $currentYear")
+
     (summaries ? GetStateForMonth(currentYear, currentMonth))
       .mapTo[actors.MonthlySummary.MonthlySummaryState]
       .flatMap(result => Future {
+        logger.info(s"Found state ${result.total}")
         Ok(views.html.summaries.month(currentYear, monthName(currentMonth), result.expenses, result.total))
       })
   }
@@ -46,7 +51,7 @@ class MonthlySummary @Inject()(actorSystem: ActorSystem) extends Controller {
   }
 
   private def currentMonth = {
-    Calendar.getInstance().get(Calendar.MONTH)
+    Calendar.getInstance().get(Calendar.MONTH) -1
   }
 
   private def currentYear = {

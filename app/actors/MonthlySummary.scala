@@ -1,7 +1,7 @@
 package actors
 
 
-import akka.actor.Props
+import akka.actor.{ActorLogging, Props}
 import akka.persistence.{PersistentActor, SnapshotOffer}
 import commands.{GetStateForMonth, ProcessTransaction}
 import events.TransactionReceived
@@ -40,9 +40,11 @@ object MonthlySummary {
   * @param month Month for which to keep track of the expenses
   * @param year  Year for which to keep track of the expenses
   */
-class MonthlySummary(month: Int, year: Int) extends PersistentActor {
+class MonthlySummary(month: Int, year: Int) extends PersistentActor with ActorLogging {
 
   import actors.MonthlySummary._
+
+  log.info("Constructing new instance")
 
   private var state = MonthlySummaryState(Map(), 0.0)
 
@@ -55,7 +57,9 @@ class MonthlySummary(month: Int, year: Int) extends PersistentActor {
     * Handles the recovery of previously stored transactions and snapshot information
     */
   override def receiveRecover: Receive = {
-    case evt: TransactionReceived => updateState(evt)
+    case evt: TransactionReceived =>
+      log.info("received recover command")
+      updateState(evt)
     case SnapshotOffer(_, snapshotState: MonthlySummaryState) => state = snapshotState
   }
 
@@ -74,5 +78,8 @@ class MonthlySummary(month: Int, year: Int) extends PersistentActor {
     */
   private def updateState(evt: TransactionReceived) = {
     state = state.updated(evt.category, evt.amount)
+
+    log.info(s"Received transaction for amount ${evt.amount} for category ${evt.category}")
+    log.info(s"Total for month ${state.total}")
   }
 }

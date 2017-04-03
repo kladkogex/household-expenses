@@ -17,8 +17,12 @@ class MonthlySummaries extends Actor with ActorLogging {
     * Handles incoming messages
     */
   def receive: Receive = {
-    case msg:ProcessTransaction=> locateOrCreate(msg.timestamp).forward(msg)
-    case msg: GetStateForMonth => locateOrCreate(msg.year, msg.month).forward(msg)
+    case msg: ProcessTransaction =>
+      log.info("Forwarding transaction to specific summary")
+      locateOrCreate(msg.timestamp).forward(msg)
+    case msg: GetStateForMonth =>
+      log.info(s"Getting state for specific summary ${msg.year} ${msg.month}")
+      locateOrCreate(msg.year, msg.month).forward(msg)
   }
 
   /**
@@ -30,6 +34,8 @@ class MonthlySummaries extends Actor with ActorLogging {
     */
   private def locateOrCreate(year: Int, month: Int): ActorRef = {
     val actorName = s"summary-$year-$month"
+
+    log.info(s"Locating actor for $month $year")
 
     context
       .child(actorName)
@@ -44,8 +50,9 @@ class MonthlySummaries extends Actor with ActorLogging {
     */
   private def locateOrCreate(timestamp: Long): ActorRef = {
     val date = calendar(timestamp)
+
     val month = date.get(Calendar.MONTH)
-    val year = date.get(Calendar.DATE)
+    val year = date.get(Calendar.YEAR)
 
     locateOrCreate(year, month)
   }

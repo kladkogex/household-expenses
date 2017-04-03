@@ -83,7 +83,7 @@ object TransactionsFile {
   } else content.reduce(_ + "\r\n" + _)
 
   private def formatDate(date: Date) = {
-    val format = new SimpleDateFormat("yMd")
+    val format = new SimpleDateFormat("yyyyMMdd")
     format.format(date)
   }
 }

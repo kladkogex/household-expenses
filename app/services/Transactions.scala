@@ -47,7 +47,7 @@ object Transactions {
     * @return The timestamp
     */
   private def parseDate(value: String): Long = {
-    val format = new SimpleDateFormat("yMd")
+    val format = new SimpleDateFormat("yyyyMMdd")
     format.parse(value).getTime
   }
 

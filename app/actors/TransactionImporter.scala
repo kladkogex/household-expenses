@@ -2,7 +2,10 @@ package actors
 
 import java.io.File
 
-import akka.actor.{Actor, ActorLogging, Props}
+import akka.actor.{Actor, ActorLogging, ActorRef, Props}
+import com.google.inject.Inject
+import com.google.inject.name.Named
+import commands.ProcessTransaction
 import models.Transaction
 import services.Transactions
 
@@ -36,7 +39,7 @@ object TransactionImporter {
 /**
   * Actor responsible for importing transactions posted by the user
   */
-class TransactionImporter extends Actor with ActorLogging {
+class TransactionImporter @Inject() (@Named("monthly-summaries")monthlySummaries: ActorRef) extends Actor with ActorLogging {
 
   import TransactionImporter._
 
@@ -67,6 +70,10 @@ class TransactionImporter extends Actor with ActorLogging {
     * @param transactions Transactions that were imported
     */
   private def publishTransactions(transactions: Seq[Transaction]) = {
+    for(tx <- transactions) {
+      monthlySummaries ! ProcessTransaction(tx.date, "Overige", tx.amount)
+    }
+
     sender ! ImportResults(transactions.size)
   }
 }

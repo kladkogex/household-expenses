@@ -10,7 +10,17 @@
         </div>
         <div class="row">
             <div class="col-xs-12">
-
+                <table class="table">
+                @for(category <- expenses) {
+                    <tr>
+                        <td>@category._1</td>
+                        <td class="text-right">&euro; @category._2</td>
+                    </tr>
+                }
+                    <tr>
+                        <td colspan="2" class="text-right">&euro; @total</td>
+                    </tr>
+                </table>
 
             </div>
         </div>

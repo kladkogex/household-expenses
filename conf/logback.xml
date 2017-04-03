@@ -8,6 +8,9 @@
         </encoder>
     </appender>
 
+    <logger name="app" level="info"/>
+    <logger name="akka" level="warn"/>
+
     <root level="info">
         <appender-ref ref="STDOUT" />
     </root>
