@@ -45,10 +45,8 @@ class TransactionImporter @Inject() (@Named("monthly-summaries")monthlySummaries
 
   /**
     * Handles incoming messages
-    *
-    * @return
     */
-  def receive: PartialFunction[Any, Unit] = {
+  def receive: Receive = {
     case input: File => parseFile(input)
   }
 

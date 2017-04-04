@@ -5,7 +5,14 @@ import java.util.{Calendar, Date}
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import commands.{GetStateForMonth, ProcessTransaction}
 
+/**
+  * Companion object for the monthly summaries
+  */
 object MonthlySummaries {
+  /**
+    * Properties for the monthly summaries actor
+    * @return Returns the properties for the actor
+    */
   def props = Props[MonthlySummaries]
 }
 
@@ -17,12 +24,8 @@ class MonthlySummaries extends Actor with ActorLogging {
     * Handles incoming messages
     */
   def receive: Receive = {
-    case msg: ProcessTransaction =>
-      log.info("Forwarding transaction to specific summary")
-      locateOrCreate(msg.timestamp).forward(msg)
-    case msg: GetStateForMonth =>
-      log.info(s"Getting state for specific summary ${msg.year} ${msg.month}")
-      locateOrCreate(msg.year, msg.month).forward(msg)
+    case msg: ProcessTransaction => locateOrCreate(msg.timestamp).forward(msg)
+    case msg: GetStateForMonth => locateOrCreate(msg.year, msg.month).forward(msg)
   }
 
   /**
@@ -34,8 +37,6 @@ class MonthlySummaries extends Actor with ActorLogging {
     */
   private def locateOrCreate(year: Int, month: Int): ActorRef = {
     val actorName = s"summary-$year-$month"
-
-    log.info(s"Locating actor for $month $year")
 
     context
       .child(actorName)
@@ -57,7 +58,7 @@ class MonthlySummaries extends Actor with ActorLogging {
     locateOrCreate(year, month)
   }
 
-  private def calendar(timestamp: Long) = {
+  private def calendar(timestamp: Long): Calendar = {
     val calendar = Calendar.getInstance()
     calendar.setTime(new Date(timestamp))
 

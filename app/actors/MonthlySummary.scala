@@ -18,6 +18,13 @@ object MonthlySummary {
     * @param total    The total amount spend
     */
   case class MonthlySummaryState(expenses: Map[String, Double], total: Double) {
+    /**
+      * Updates the state for the monthly summary
+      *
+      * @param category Category for the transaction
+      * @param amount   Amount transferred
+      * @return Returns the updated state
+      */
     def updated(category: String, amount: Double) = {
       MonthlySummaryState(expenses.updated(category,
         expenses.get(category).map(_ + amount).getOrElse(amount)), total + amount)
@@ -44,8 +51,6 @@ class MonthlySummary(month: Int, year: Int) extends PersistentActor with ActorLo
 
   import actors.MonthlySummary._
 
-  log.info("Constructing new instance")
-
   private var state = MonthlySummaryState(Map(), 0.0)
 
   /**
@@ -57,10 +62,8 @@ class MonthlySummary(month: Int, year: Int) extends PersistentActor with ActorLo
     * Handles the recovery of previously stored transactions and snapshot information
     */
   override def receiveRecover: Receive = {
-    case evt: TransactionReceived =>
-      log.info("received recover command")
-      updateState(evt)
-    case SnapshotOffer(_, snapshotState: MonthlySummaryState) => state = snapshotState
+    case evt: TransactionReceived => updateState(evt)
+    case SnapshotOffer(_, snapshotState: MonthlySummaryState) => restoreState(snapshotState)
   }
 
   /**
@@ -81,5 +84,14 @@ class MonthlySummary(month: Int, year: Int) extends PersistentActor with ActorLo
 
     log.info(s"Received transaction for amount ${evt.amount} for category ${evt.category}")
     log.info(s"Total for month ${state.total}")
+    log.info(s"Total for category ${state.expenses(evt.category)}")
+  }
+
+  /**
+    * Restores the state of the actor
+    * @param snapshotState  State snapshot
+    */
+  private def restoreState(snapshotState: MonthlySummaryState): Unit = {
+    state = snapshotState
   }
 }
