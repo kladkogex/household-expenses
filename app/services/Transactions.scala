@@ -22,12 +22,12 @@ object Transactions {
     try {
       val records = CSVFormat.DEFAULT.withHeader().parse(new FileReader(input))
 
-      if(hasValidFileHeader(records)) {
+      if (hasValidFileHeader(records)) {
         Left(new IllegalArgumentException("Specified input file contains invalid header"))
       } else {
         val transactions = records.map(record => Transaction(
           parseDate(record.get(0)), record.get(1), record.get(2), record.get(3),
-          record.get(4), record.get(5), parseAmount(record.get(6)), record.get(7), record.get(8)))
+          record.get(4), record.get(5), parseAmount(record.get(6), record.get(5)), record.get(7), record.get(8)))
 
         Right(transactions.toSeq)
       }
@@ -36,7 +36,7 @@ object Transactions {
       case e@(_: IOException |
               _: ParseException |
               _: IllegalArgumentException |
-              _:ArrayIndexOutOfBoundsException ) => Left(e)
+              _: ArrayIndexOutOfBoundsException) => Left(e)
     }
   }
 
@@ -57,13 +57,15 @@ object Transactions {
     * @param value Value to parse
     * @return The amount in euros
     */
-  private def parseAmount(value: String): Double = {
-    value.replace(",", ".").toDouble
+  private def parseAmount(value: String, direction: String): Double = direction.toLowerCase() match {
+    case "bij" => value.replace(",", ".").toDouble
+    case "af" => -1 * value.replace(",", ".").toDouble
   }
 
   /**
     * Checks if the CSV parser is for a file of the correct format
-    * @param input  Input to parse
+    *
+    * @param input Input to parse
     * @return Returns true when the header is valid; Otherwise false.
     */
   private def hasValidFileHeader(input: CSVParser) = {

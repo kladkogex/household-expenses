@@ -34,8 +34,13 @@ class MonthlySummary @Inject()(actorSystem: ActorSystem) extends Controller {
     (summaries ? GetStateForMonth(currentYear, currentMonth))
       .mapTo[actors.MonthlySummary.MonthlySummaryState]
       .flatMap(result => Future {
-        logger.info(s"Found state ${result.total}")
-        Ok(views.html.summaries.month(currentYear, monthName(currentMonth), result.expenses, result.total))
+
+        val total = BigDecimal(result.total).setScale(2, BigDecimal.RoundingMode.HALF_UP).toDouble
+
+        val expenses = result.expenses
+          .mapValues(amount => BigDecimal(amount).setScale(2, BigDecimal.RoundingMode.HALF_UP).toDouble)
+
+        Ok(views.html.summaries.month(currentYear, monthName(currentMonth), expenses, total))
       })
   }
 

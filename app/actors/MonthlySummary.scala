@@ -82,9 +82,9 @@ class MonthlySummary(month: Int, year: Int) extends PersistentActor with ActorLo
   private def updateState(evt: TransactionReceived) = {
     state = state.updated(evt.category, evt.amount)
 
-    log.info(s"Received transaction for amount ${evt.amount} for category ${evt.category}")
-    log.info(s"Total for month ${state.total}")
-    log.info(s"Total for category ${state.expenses(evt.category)}")
+    log.info(s"Received transaction for amount ${evt.amount} for category ${evt.category} in month ${month}-${year}")
+    log.info(s"Total for month ${state.total} in month ${month}-${year}")
+    log.info(s"Total for category ${state.expenses(evt.category)} in month ${month}-${year}")
   }
 
   /**
